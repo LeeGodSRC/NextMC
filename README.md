@@ -1,7 +1,7 @@
 # Next Minecraft Server
 Next Generation Minecraft Server coded in kotlin without any original Mojang codes, complete multi-threaded based structures, aiming for best possible performance
 
-This project is purely made for fun, May be discontinued soon but if it's actually completed, It would be something crazy
+This project is purely made for fun, May be discontinued if I lost motivation but if it's actually completed, It would be something crazy
 
 Current Stages: In Very Early Development
 
