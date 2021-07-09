@@ -1,4 +1,4 @@
-# nextmc
+# Next Minecraft Server
 Next Generation Minecraft Server with complete multi-threaded structures, aiming for best possible performance
 
 This project is purely made for fun, May be discontinued soon but if it's actually completed, It would be something crazy
