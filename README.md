@@ -2,7 +2,8 @@
 Next Generation Minecraft Server coded in kotlin without any original Mojang codes, complete multi-threaded based structures, aiming for best possible performance
 
 This project is purely made for fun, May be discontinued soon but if it's actually completed, It would be something crazy
-Current Stages: Not Usable, In development
+
+Current Stages: In Very Early Development
 
 ## Q&A
 **1.** Would it be the replacement of any sort of fork for Minecraft Server?
