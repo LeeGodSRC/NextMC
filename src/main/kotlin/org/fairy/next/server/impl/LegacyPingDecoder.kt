@@ -3,9 +3,10 @@ package org.fairy.next.server.impl
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
+import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyHandshake
 import org.fairy.next.server.util.LegacyMinecraftPingVersion
 import org.fairy.next.server.util.checkFrame
-import org.fairy.next.server.packet.send.PacketLegacyPing
+import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyPing
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 
@@ -50,17 +51,18 @@ class LegacyPingDecoder : ByteToMessageDecoder() {
             return
         }
 
+        val socketAddress = ctx.channel().remoteAddress() as InetSocketAddress
         val originalReaderIndex: Int = data.readerIndex()
         val first: Short = data.readUnsignedByte()
         if (first.toInt() == 0xfe) {
             // possibly a ping
             if (!data.isReadable()) {
-//                out.add(PacketLegacyPing(LegacyMinecraftPingVersion.MINECRAFT_1_3))
+                out.add(PacketLegacyPing(LegacyMinecraftPingVersion.MINECRAFT_1_3, socketAddress))
                 return
             }
             val next: Short = data.readUnsignedByte()
             if (next.toInt() == 1 && !data.isReadable()) {
-//                out.add(PacketLegacyPing(LegacyMinecraftPingVersion.MINECRAFT_1_4))
+                out.add(PacketLegacyPing(LegacyMinecraftPingVersion.MINECRAFT_1_4, socketAddress))
                 return
             }
 
@@ -68,7 +70,7 @@ class LegacyPingDecoder : ByteToMessageDecoder() {
             out.add(readExtended16Data(data))
         } else if (first.toInt() == 0x02 && data.isReadable()) {
             data.skipBytes(data.readableBytes())
-//            out.add(LegacyHandshake())
+            out.add(PacketLegacyHandshake())
         } else {
             data.readerIndex(originalReaderIndex)
             ctx.pipeline().remove(this)

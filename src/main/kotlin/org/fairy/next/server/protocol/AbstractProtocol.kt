@@ -3,6 +3,8 @@ package org.fairy.next.server.protocol
 import com.google.common.collect.ImmutableMap
 import org.fairy.next.extension.isMutable
 import org.fairy.next.extension.mutable
+import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyHandshake
+import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyPing
 import org.fairy.next.org.fairy.next.server.packet.receive.PacketEncryptionResponse
 import org.fairy.next.org.fairy.next.server.packet.send.PacketEncryptionRequest
 import org.fairy.next.org.fairy.next.server.packet.receive.PacketPing
@@ -61,6 +63,14 @@ abstract class AbstractProtocol(val id: Int) {
     }
 
     open fun handleEncryptionResponse(networkHandler: NetworkHandler, packet: PacketEncryptionResponse) {
+        throw UnsupportedOperationException()
+    }
+
+    open fun handleLegacyPing(networkHandler: NetworkHandler, packet: PacketLegacyPing) {
+        throw UnsupportedOperationException()
+    }
+
+    open fun handleLegacyHandshake(networkHandler: NetworkHandler, packet: PacketLegacyHandshake) {
         throw UnsupportedOperationException()
     }
 

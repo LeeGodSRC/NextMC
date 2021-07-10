@@ -2,10 +2,12 @@ package org.fairy.next.server
 
 import com.mojang.authlib.GameProfile
 import io.netty.channel.Channel
+import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.local.LocalChannel
 import io.netty.channel.local.LocalServerChannel
+import io.netty.util.concurrent.Future
 import io.netty.util.concurrent.GenericFutureListener
 import net.kyori.adventure.text.Component
 import org.fairy.next.constant.HEARTBEAT_TIME
@@ -64,7 +66,7 @@ class NetworkHandler : SimpleChannelInboundHandler<Packet>() {
         this.packetQueue += PendingPacket(packet, null)
     }
 
-    fun send(packet: Packet, listener: GenericFutureListener<*>?) = this.lock.write {
+    fun send(packet: Packet, listener: GenericFutureListener<out Future<in Void>>?) = this.lock.write {
         this.packetQueue += PendingPacket(packet, listener)
     }
 
@@ -102,7 +104,6 @@ class NetworkHandler : SimpleChannelInboundHandler<Packet>() {
         this.flush()
 
         if (curTime - this.createdTimestamp >= HEARTBEAT_TIME) {
-
             // is Logging
             if (this.protocol is LoginProtocol
                 && this.loginProgress != LoginProtocol.Progress.PRE_ACCEPT
@@ -110,12 +111,19 @@ class NetworkHandler : SimpleChannelInboundHandler<Packet>() {
                 this.close(Component.text("Take to long to Login."))
                 return
             }
-
         }
     }
 
     fun flush() {
-        this
+        var packet: PendingPacket
+        while (this.packetQueue.poll().let { packet = it; it != null }) {
+            val channelFuture = this.channel!!.write(packet)
+
+            packet.listener?.let { channelFuture.addListener(it) }
+            channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
+        }
+
+        channel?.flush()
     }
 
     fun isOpen(): Boolean {
@@ -146,6 +154,6 @@ class NetworkHandler : SimpleChannelInboundHandler<Packet>() {
         this.disconnectMessage = message
     }
 
-    data class PendingPacket(val packet: Packet, val listener: GenericFutureListener<*>?)
+    data class PendingPacket(val packet: Packet, val listener: GenericFutureListener<out Future<in Void>>?)
 
 }

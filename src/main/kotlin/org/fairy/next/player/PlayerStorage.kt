@@ -2,6 +2,7 @@ package org.fairy.next.player
 
 import org.fairy.next.org.fairy.next.util.Location
 import org.fairy.next.server.NetworkHandler
+import org.fairy.next.server.Protocol
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.collections.ArrayList
@@ -49,7 +50,9 @@ class PlayerStorage {
     fun processLogin(networkHandler: NetworkHandler, player: Player) {
         // TODO load player data
 
+        networkHandler.protocol = Protocol.PLAY.protocol
         val location = Location("world", 0, 0, 0)
+
 
     }
 

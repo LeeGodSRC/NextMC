@@ -30,6 +30,8 @@ class LoginProtocol : AbstractProtocol(2) {
     override fun register() {
         this.registerSend(0, PacketDisconnect::class)
         this.registerSend(1, PacketEncryptionRequest::class)
+        this.registerSend(2, PacketLoginSuccess::class)
+        this.registerSend(3, PacketSetCompression::class)
 
         this.registerReceive(0, PacketLoginStart::class)
         this.registerReceive(1, PacketEncryptionResponse::class)
@@ -123,7 +125,7 @@ class LoginProtocol : AbstractProtocol(2) {
         // TODO ban, whitelist, max players
 
         // mark as accepted
-        networkHandler.loginProgress = LoginProtocol.Progress.ACCEPTED
+        networkHandler.loginProgress = Progress.ACCEPTED
         val compressionThreshold = mc.networkCompressionThreshold
 
         if (compressionThreshold >= 0 && !networkHandler.isLocalChannel()) {
