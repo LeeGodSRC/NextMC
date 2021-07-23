@@ -1,9 +1,10 @@
-package org.fairy.next.org.fairy.next.util
+package org.fairy.next.util
 
 import org.fairy.next.extension.log
 import java.io.UnsupportedEncodingException
 import java.security.*
 import javax.crypto.*
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 
@@ -43,6 +44,16 @@ fun createNewKeyPair(): KeyPair? = try {
     ex.printStackTrace()
     System.err.println("Key pair generation failed!")
     null
+}
+
+fun createNetCipherInstance(opMode: Int, key: Key): Cipher? {
+    return try {
+        val cipher = Cipher.getInstance("AES/CFB8/NoPadding")
+        cipher.init(opMode, key, IvParameterSpec(key.encoded))
+        cipher
+    } catch (ex: GeneralSecurityException) {
+        throw RuntimeException(ex)
+    }
 }
 
 fun decryptToSecretKey(privateKey: PrivateKey, byteArray: ByteArray) = SecretKeySpec(decryptData(privateKey, byteArray), "AES")

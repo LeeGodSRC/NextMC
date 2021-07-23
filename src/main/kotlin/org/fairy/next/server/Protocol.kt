@@ -1,8 +1,8 @@
 package org.fairy.next.server
 
-import org.fairy.next.org.fairy.next.server.protocol.LoginProtocol
-import org.fairy.next.org.fairy.next.server.protocol.PlayProtocol
-import org.fairy.next.org.fairy.next.server.protocol.StatusProtocol
+import org.fairy.next.server.protocol.LoginProtocol
+import org.fairy.next.server.protocol.PlayProtocol
+import org.fairy.next.server.protocol.StatusProtocol
 import org.fairy.next.server.protocol.AbstractProtocol
 import org.fairy.next.server.protocol.HandshakeProtocol
 

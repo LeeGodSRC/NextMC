@@ -1,9 +1,9 @@
-package org.fairy.next.org.fairy.next.server.packet.receive
+package org.fairy.next.server.packet.receive
 
 import io.netty.buffer.ByteBuf
-import org.fairy.next.org.fairy.next.server.packet.ReceivePacket
-import org.fairy.next.org.fairy.next.util.decryptData
-import org.fairy.next.org.fairy.next.util.decryptToSecretKey
+import org.fairy.next.server.packet.ReceivePacket
+import org.fairy.next.util.decryptData
+import org.fairy.next.util.decryptToSecretKey
 import org.fairy.next.server.NetworkHandler
 import org.fairy.next.server.readByteArray
 import java.security.PrivateKey
@@ -20,7 +20,7 @@ class PacketEncryptionResponse : ReceivePacket {
     }
 
     override fun handle(networkHandler: NetworkHandler) {
-
+        networkHandler.protocol?.handleEncryptionResponse(networkHandler, this)
     }
 
     fun decryptSecretKey(privateKey: PrivateKey) : SecretKey = decryptToSecretKey(privateKey, this.secretKeyEncrypted)

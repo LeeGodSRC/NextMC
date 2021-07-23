@@ -1,4 +1,4 @@
-package org.fairy.next.org.fairy.next.util.lock
+package org.fairy.next.util.lock
 
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.VarHandle

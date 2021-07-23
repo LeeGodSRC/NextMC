@@ -2,7 +2,7 @@ package org.fairy.next.server.packet.receive
 
 import io.netty.buffer.ByteBuf
 import org.fairy.next.constant.MAXIMUM_HOSTNAME_LENGTH
-import org.fairy.next.org.fairy.next.server.packet.ReceivePacket
+import org.fairy.next.server.packet.ReceivePacket
 import org.fairy.next.player.Player
 import org.fairy.next.server.*
 import org.fairy.next.server.packet.Packet

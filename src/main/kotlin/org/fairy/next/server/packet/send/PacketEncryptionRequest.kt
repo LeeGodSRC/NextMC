@@ -1,8 +1,8 @@
-package org.fairy.next.org.fairy.next.server.packet.send
+package org.fairy.next.server.packet.send
 
 import io.netty.buffer.ByteBuf
-import org.fairy.next.org.fairy.next.server.packet.ReceivePacket
-import org.fairy.next.org.fairy.next.server.packet.SendPacket
+import org.fairy.next.server.packet.ReceivePacket
+import org.fairy.next.server.packet.SendPacket
 import org.fairy.next.server.*
 import org.fairy.next.server.util.decodePublicKey
 import java.security.PublicKey

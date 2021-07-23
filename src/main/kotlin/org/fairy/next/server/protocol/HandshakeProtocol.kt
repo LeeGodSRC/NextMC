@@ -1,6 +1,7 @@
 package org.fairy.next.server.protocol
 
-import org.fairy.next.org.fairy.next.server.protocol.LoginProtocol
+import org.fairy.next.extension.log
+import org.fairy.next.server.protocol.LoginProtocol
 import org.fairy.next.player.Player
 import org.fairy.next.server.NetworkHandler
 import org.fairy.next.server.Protocol
@@ -18,6 +19,7 @@ class HandshakeProtocol : AbstractProtocol(-1) {
                 networkHandler.protocol = packet.nextState.protocol
                 networkHandler.loginProgress = LoginProtocol.Progress.HELLO
                 networkHandler.host = packet.address + ":" + packet.serverPort
+                networkHandler.version = packet.version
                 // TODO - check protocol, bungee mode and throttle
                 return
             }

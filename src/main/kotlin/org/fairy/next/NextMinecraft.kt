@@ -6,7 +6,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import com.mojang.authlib.yggdrasil.YggdrasilGameProfileRepository
 import org.fairy.next.console.NextConsole
 import org.fairy.next.UpdateScheduler
-import org.fairy.next.org.fairy.next.util.createNewKeyPair
+import org.fairy.next.util.createNewKeyPair
 import org.fairy.next.player.PlayerStorage
 import org.fairy.next.world.WorldContainer
 import org.fairy.next.server.NettyServer
@@ -25,7 +25,7 @@ class NextMinecraft {
     }
 
     val networkCompressionThreshold: Int
-        get() = 256
+        get() = -1
 
     lateinit var updateScheduler: UpdateScheduler
     lateinit var playerStorage: PlayerStorage

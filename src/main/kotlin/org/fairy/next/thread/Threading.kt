@@ -1,6 +1,7 @@
 package org.fairy.next.thread
 
 import org.fairy.next.constant.IN_IDE
+import org.fairy.next.extension.log
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -17,6 +18,9 @@ class Threading {
 
     fun newThread(name: String, f : () -> Unit) : Future<*> {
         return threadPool.submit {
+            if (name != "Console Thread") {
+                log.info("new thread $name")
+            }
             var originalName : String? = null
             if (IN_IDE) {
                 originalName = curThread.name
@@ -36,11 +40,11 @@ class Threading {
         }
     }
 
-    fun newScheduledPool(name: String, threads: Int) : ScheduledExecutorService {
+    fun newScheduledPool(name: String, threads: Int, daemon: Boolean = true) : ScheduledExecutorService {
         return if (threads == 1) {
-            Executors.newSingleThreadScheduledExecutor(threadFactory(name))
+            Executors.newSingleThreadScheduledExecutor(threadFactory(name, daemon))
         } else {
-            Executors.newScheduledThreadPool(threads, threadFactory(name))
+            Executors.newScheduledThreadPool(threads, threadFactory(name, daemon))
         }
     }
 

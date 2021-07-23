@@ -1,16 +1,17 @@
-package org.fairy.next.org.fairy.next.server.protocol
+package org.fairy.next.server.protocol
 
 import com.google.common.base.Preconditions
 import com.mojang.authlib.GameProfile
 import net.kyori.adventure.text.Component
+import org.fairy.next.extension.log
 import org.fairy.next.extension.logger
-import org.fairy.next.org.fairy.next.extension.mc
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketEncryptionResponse
-import org.fairy.next.org.fairy.next.server.packet.send.PacketEncryptionRequest
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketLoginStart
-import org.fairy.next.org.fairy.next.server.packet.send.PacketLoginSuccess
-import org.fairy.next.org.fairy.next.server.packet.send.PacketSetCompression
-import org.fairy.next.org.fairy.next.util.getServerIdHash
+import org.fairy.next.extension.mc
+import org.fairy.next.server.packet.receive.PacketEncryptionResponse
+import org.fairy.next.server.packet.send.PacketEncryptionRequest
+import org.fairy.next.server.packet.receive.PacketLoginStart
+import org.fairy.next.server.packet.send.PacketLoginSuccess
+import org.fairy.next.server.packet.send.PacketSetCompression
+import org.fairy.next.util.getServerIdHash
 import org.fairy.next.player.Player
 import org.fairy.next.server.NetworkHandler
 import org.fairy.next.server.packet.send.PacketDisconnect
@@ -73,20 +74,25 @@ class LoginProtocol : AbstractProtocol(2) {
         networkHandler.loginKey = packet.decryptSecretKey(privateKey)
         networkHandler.loginProgress = Progress.AUTHENTICATING
         newThread("Authenticator Thread") {
-            val gameProfile = networkHandler.gameProfile
+            log.info("Start authentication")
+            try {
+                val gameProfile = networkHandler.gameProfile
 
-            val s =
-                BigInteger(getServerIdHash(serverId, mc.keyPair.public, networkHandler.loginKey!!)).toString(16)
-            mc.minecraftSessionService.hasJoinedServer(
-                GameProfile(null, gameProfile.name),
-                s,
-                getINetAddress(networkHandler)
-            )?.let {
-                networkHandler.gameProfile = it
-                if (!networkHandler.isOpen())
-                    return@newThread
+                val s =
+                    BigInteger(getServerIdHash(serverId, mc.keyPair.public, networkHandler.loginKey!!)).toString(16)
+                mc.minecraftSessionService.hasJoinedServer(
+                    GameProfile(null, gameProfile.name),
+                    s,
+                    getINetAddress(networkHandler)
+                )?.let {
+                    networkHandler.gameProfile = it
+                    if (!networkHandler.isOpen())
+                        return@newThread
 
-                this.prepareConnectionAsync(networkHandler)
+                    this.prepareConnectionAsync(networkHandler)
+                }
+            } catch (ex: Exception) {
+                log.error("An error occurs while handling authentication", ex)
             }
         }
     }
@@ -140,8 +146,9 @@ class LoginProtocol : AbstractProtocol(2) {
         val loginSuccess = PacketLoginSuccess()
         loginSuccess.gameProfile = networkHandler.gameProfile
 
-        networkHandler.send(loginSuccess)
-        mc.playerStorage.processLogin(networkHandler, player)
+        networkHandler.send(loginSuccess) {
+            mc.playerStorage.processLogin(networkHandler, player)
+        }
     }
 
     fun getINetAddress(networkHandler: NetworkHandler): InetAddress? {

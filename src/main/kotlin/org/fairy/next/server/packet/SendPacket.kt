@@ -1,4 +1,4 @@
-package org.fairy.next.org.fairy.next.server.packet
+package org.fairy.next.server.packet
 
 import io.netty.buffer.ByteBuf
 import org.fairy.next.server.NetworkHandler

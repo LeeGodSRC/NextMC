@@ -1,4 +1,4 @@
-package org.fairy.next.org.fairy.next.util
+package org.fairy.next.util
 
 import net.jafama.FastMath
 

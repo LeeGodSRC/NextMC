@@ -4,13 +4,16 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.*
 import io.netty.channel.epoll.EpollChannelOption
 import io.netty.util.AttributeKey
+import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntArraySet
+import org.fairy.next.extension.log
 import org.fairy.next.extension.logger
-import org.fairy.next.org.fairy.next.server.protocol.LoginProtocol
 import org.fairy.next.server.protocol.AbstractProtocol
-import org.fairy.next.server.ServerChannelInitializerHolder
-import org.fairy.next.server.TransportType
+import org.fairy.next.thread.ParallelBlockingWorker
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.collections.ArrayList
 
 
 class NettyServer {
@@ -33,6 +36,12 @@ class NettyServer {
     lateinit var workerGroup: EventLoopGroup
     lateinit var serverChannelInitializerHolder: ServerChannelInitializerHolder
 
+    private val connectionParallelWorker = ParallelBlockingWorker("Connection", 4)
+
+    // Not Thread safe
+    private val connections: MutableList<NetworkHandler> = ArrayList()
+    val pendingConnections = ConcurrentLinkedQueue<NetworkHandler>()
+
     fun boot() {
         this.transportType = TransportType.findType()
         this.bossGroup = this.transportType.createEventGroup(TransportType.Type.BOSS)
@@ -40,6 +49,40 @@ class NettyServer {
         this.serverChannelInitializerHolder = ServerChannelInitializerHolder(ServerChannelInitializer())
 
         this.bind(InetSocketAddress(25565))
+    }
+
+    fun tick() {
+        var toRemove = IntArrayList()
+
+        var f: NetworkHandler? = null
+        while (this.pendingConnections.poll()?.let { f = it; true } == true) {
+            this.connections += f!!
+        }
+
+        this.connectionParallelWorker.runBlocking(this.connections) { connection, index ->
+            if (connection.hasChannel()) {
+                if (!connection.isOpen()) {
+                    if (!connection.preparing) {
+                        toRemove.add(index)
+                        connection.handleDisconnection()
+                    }
+                } else {
+                    try {
+                        connection.tick()
+                    } catch (e: Exception) {
+                        log.error("An error occurs while ticking connection", e)
+                    }
+                }
+            }
+        }
+
+        toRemove.sort()
+        var removedIndexes = 0
+        toRemove.forEach {
+            log.info("$it - $removedIndexes")
+            this.connections.removeAt(it - removedIndexes)
+            removedIndexes++
+        }
     }
 
     fun bind(address: InetSocketAddress) {
@@ -54,7 +97,9 @@ class NettyServer {
 
         this.address = address
 
-        serverBootstrap.childOption(EpollChannelOption.TCP_FASTOPEN, 3)
+//        if (transportType == TransportType.EPOLL) {
+//            serverBootstrap.childOption(EpollChannelOption.TCP_FASTOPEN, 3)
+//        }
         serverBootstrap.bind()
             .addListener(ChannelFutureListener {
                 val channel = it.channel()

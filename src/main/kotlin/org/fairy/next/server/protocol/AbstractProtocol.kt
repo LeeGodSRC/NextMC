@@ -3,17 +3,18 @@ package org.fairy.next.server.protocol
 import com.google.common.collect.ImmutableMap
 import org.fairy.next.extension.isMutable
 import org.fairy.next.extension.mutable
-import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyHandshake
-import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyPing
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketEncryptionResponse
-import org.fairy.next.org.fairy.next.server.packet.send.PacketEncryptionRequest
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketPing
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketStatusStart
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketLoginStart
+import org.fairy.next.server.packet.legacy.PacketLegacyHandshake
+import org.fairy.next.server.packet.legacy.PacketLegacyPing
+import org.fairy.next.server.packet.receive.PacketEncryptionResponse
+import org.fairy.next.server.packet.send.PacketEncryptionRequest
+import org.fairy.next.server.packet.receive.PacketPing
+import org.fairy.next.server.packet.receive.PacketStatusStart
+import org.fairy.next.server.packet.receive.PacketLoginStart
 import org.fairy.next.server.NetworkHandler
 import org.fairy.next.server.packet.receive.PacketHandshake
 import org.fairy.next.server.packet.Packet
 import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 abstract class AbstractProtocol(val id: Int) {
 
@@ -44,7 +45,35 @@ abstract class AbstractProtocol(val id: Int) {
         this.sendRegistry.mutable()[id] = type
     }
 
+    fun getPacketId(packet: Packet) : Int? {
+        var result: Int? = null
+        this.sendRegistry.forEach { (key, value) ->
+            if (value.isInstance(packet)) {
+                result = key
+                return@forEach
+            }
+        }
+        result ?: run {
+            this.sendRegistry.forEach { (key, value) ->
+                if (value.isInstance(packet)) {
+                    result = key
+                    return@forEach
+                }
+            }
+        }
+        return result
+    }
+
+    fun createReceivePacket(id: Int): Packet? {
+        val kClass = this.receiveRegistry[id]
+        return kClass?. let { it.primaryConstructor?.call() }
+    }
+
     abstract fun register()
+
+    open fun disconnect(networkHandler: NetworkHandler) {
+
+    }
 
     open fun handleHandshake(networkHandler: NetworkHandler, packet: PacketHandshake) {
         throw UnsupportedOperationException()
@@ -67,10 +96,14 @@ abstract class AbstractProtocol(val id: Int) {
     }
 
     open fun handleLegacyPing(networkHandler: NetworkHandler, packet: PacketLegacyPing) {
-        throw UnsupportedOperationException()
+//        throw UnsupportedOperationException()
     }
 
     open fun handleLegacyHandshake(networkHandler: NetworkHandler, packet: PacketLegacyHandshake) {
+        throw UnsupportedOperationException()
+    }
+
+    open fun handleKeepAlive(networkHandler: NetworkHandler, randomId: Long) {
         throw UnsupportedOperationException()
     }
 

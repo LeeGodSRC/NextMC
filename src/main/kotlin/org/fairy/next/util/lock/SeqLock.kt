@@ -1,4 +1,4 @@
-package org.fairy.next.org.fairy.next.util.lock
+package org.fairy.next.util.lock
 
 /**
  * SeqLocks are used to provide fast locking mechanism to multiple shared variables. A sequential counter

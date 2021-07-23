@@ -1,10 +1,10 @@
 package org.fairy.next.world.chunk
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import org.fairy.next.org.fairy.next.extension.mc
-import org.fairy.next.org.fairy.next.thread.MainThreadQueue
-import org.fairy.next.org.fairy.next.util.lock.WeakSeqLock
-import org.fairy.next.org.fairy.next.util.toHash
+import org.fairy.next.extension.mc
+import org.fairy.next.thread.MainThreadQueue
+import org.fairy.next.util.lock.WeakSeqLock
+import org.fairy.next.util.toHash
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantReadWriteLock

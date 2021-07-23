@@ -3,10 +3,10 @@ package org.fairy.next.server.impl
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
-import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyHandshake
+import org.fairy.next.server.packet.legacy.PacketLegacyHandshake
 import org.fairy.next.server.util.LegacyMinecraftPingVersion
 import org.fairy.next.server.util.checkFrame
-import org.fairy.next.org.fairy.next.server.packet.legacy.PacketLegacyPing
+import org.fairy.next.server.packet.legacy.PacketLegacyPing
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 

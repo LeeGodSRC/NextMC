@@ -1,19 +1,18 @@
-package org.fairy.next.org.fairy.next.server.protocol
+package org.fairy.next.server.protocol
 
 import net.kyori.adventure.text.Component
-import org.fairy.next.org.fairy.next.extension.mc
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketPing
-import org.fairy.next.org.fairy.next.server.packet.receive.PacketStatusStart
-import org.fairy.next.org.fairy.next.server.packet.send.PacketPong
-import org.fairy.next.org.fairy.next.server.packet.send.PacketServerInfo
-import org.fairy.next.org.fairy.next.server.ping.ServerPing
-import org.fairy.next.org.fairy.next.server.ping.ServerSample
+import org.fairy.next.extension.log
+import org.fairy.next.extension.mc
+import org.fairy.next.server.packet.receive.PacketPing
+import org.fairy.next.server.packet.receive.PacketStatusStart
+import org.fairy.next.server.packet.send.PacketPong
+import org.fairy.next.server.packet.send.PacketServerInfo
+import org.fairy.next.server.ping.ServerPing
+import org.fairy.next.server.ping.ServerSample
 import org.fairy.next.server.NetworkHandler
 import org.fairy.next.server.protocol.AbstractProtocol
 
 class StatusProtocol : AbstractProtocol(1) {
-
-    private var statusPerformed = false
 
     override fun register() {
         this.registerReceive(0x00, PacketStatusStart::class)
@@ -23,11 +22,11 @@ class StatusProtocol : AbstractProtocol(1) {
     }
 
     override fun handleStatusStart(networkHandler: NetworkHandler, packet: PacketStatusStart) {
-        if (this.statusPerformed) {
+        if (networkHandler.statusPerformed) {
             networkHandler.close(Component.text("Status request has been handled."))
             return
         }
-        this.statusPerformed = true
+        networkHandler.statusPerformed = true
 
         val samples = ArrayList<ServerSample>()
         mc.playerStorage.forEach {

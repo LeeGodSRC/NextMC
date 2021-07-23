@@ -1,18 +1,18 @@
-package org.fairy.next.org.fairy.next.util
+package org.fairy.next.util
 
-import org.fairy.next.org.fairy.next.extension.mc
+import org.fairy.next.extension.mc
 import org.fairy.next.world.World
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 data class Location(
-    var worldName: String,
-    var x: Double,
-    var y: Double,
-    var z: Double,
-    var yaw: Float = 0.0f,
-    var pitch: Float = 0.0f
+    private var worldName: String,
+    private var _x: Double,
+    private var _y: Double,
+    private var _z: Double,
+    private var _yaw: Float = 0.0f,
+    private var _pitch: Float = 0.0f
 ) {
 
     constructor(worldName: String, x: Int, y: Int, z: Int, yaw: Float = 0.0f, pitch: Float = 0.0f): this(
@@ -23,6 +23,62 @@ data class Location(
         yaw,
         pitch
     )
+
+    var x: Double
+        get() = _x
+        set(value) {
+            _x = if (value.isNaN()) {
+                0.0
+            } else {
+                value
+            }
+        }
+
+    var y: Double
+        get() = _y
+        set(value) {
+            _y = if (value.isNaN()) {
+                0.0
+            } else {
+                value
+            }
+        }
+
+    var z: Double
+        get() = _z
+        set(value) {
+            _z = if (value.isNaN()) {
+                0.0
+            } else {
+                value
+            }
+        }
+
+    var yaw: Float
+        get() = _yaw
+        set(value) {
+            _yaw = if (value.isNaN()) {
+                0.0F
+            } else {
+                value
+            }
+        }
+
+    var pitch: Float
+        get() = _pitch
+        set(value) {
+            _pitch = if (value.isNaN()) {
+                0.0F
+            } else {
+                value
+            }
+        }
+
+    val chunkX: Int
+        get() = x.floor() shr 4
+
+    val chunkZ: Int
+        get() = z.floor() shr 4
 
     var world: World?
         get() = mc.worldContainer.get(this.worldName)

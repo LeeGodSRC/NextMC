@@ -5,7 +5,7 @@ import io.netty.channel.ChannelInitializer
 import org.fairy.next.extension.logger
 import java.util.function.Supplier
 
-class ServerChannelInitializerHolder(val initializerIn: ChannelInitializer<Channel>) : Supplier<ChannelInitializer<Channel>> {
+class ServerChannelInitializerHolder(initializerIn: ChannelInitializer<Channel>) : Supplier<ChannelInitializer<Channel>> {
 
     var initializer: ChannelInitializer<Channel> = initializerIn
         set(value) {

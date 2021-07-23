@@ -1,4 +1,4 @@
-package org.fairy.next.org.fairy.next.server.impl
+package org.fairy.next.server.impl
 
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext

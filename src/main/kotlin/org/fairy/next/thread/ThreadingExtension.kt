@@ -9,10 +9,10 @@ import java.util.concurrent.ThreadFactory
 val curThread : Thread
     get() = Thread.currentThread()
 
-fun threadFactory(name: String) : ThreadFactory {
+fun threadFactory(name: String, daemon: Boolean = true) : ThreadFactory {
     return ThreadFactoryBuilder()
         .setNameFormat(Threading.PREFIX + name)
-        .setDaemon(true)
+        .setDaemon(daemon)
         .build()
 }
 
@@ -26,4 +26,8 @@ fun newThreadPool(name: String, threads: Int) : ExecutorService {
 
 fun newScheduledPool(name: String, threads: Int) : ScheduledExecutorService {
     return Threading.INSTANCE.newScheduledPool(name, threads)
+}
+
+fun newScheduledPool(name: String, threads: Int, daemon: Boolean = true) : ScheduledExecutorService {
+    return Threading.INSTANCE.newScheduledPool(name, threads, daemon)
 }

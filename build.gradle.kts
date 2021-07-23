@@ -10,11 +10,12 @@ version = "0.0.1b1"
 
 repositories {
     mavenCentral()
+    jcenter()
     maven("https://libraries.minecraft.net")
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
@@ -24,7 +25,6 @@ dependencies {
     implementation("com.mojang:authlib:1.5.25")
     implementation("net.jafama:jafama:2.3.2")
     implementation("it.unimi.dsi:fastutil:8.5.4")
-
 
     api(platform("net.kyori:adventure-bom:4.8.1"))
     api("net.kyori:adventure-api")

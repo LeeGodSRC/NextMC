@@ -6,15 +6,28 @@ import io.netty.handler.codec.CorruptedFrameException
 import net.kyori.adventure.text.Component
 import org.fairy.next.constant.DEFAULT_MAX_STRING_SIZE
 import org.fairy.next.extension.readComponentFromJson
-import org.fairy.next.extension.toJsonString
+import org.fairy.next.extension.toJsonObject
+import org.fairy.next.server.ping.gson
 import org.fairy.next.server.util.checkFrame
+import org.fairy.next.util.Int3
 import java.io.Closeable
 import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.math.ceil
 
 private val packetCache = IdentityHashMap<ByteBuf, PacketInfo>()
+private val VARINT_EXACT_BYTE_LENGTHS: IntArray by lazy {
+        val value = IntArray(33)
+        repeat (32) {
+            value[it] = ceil((31.0 -(it - 1)) / 7.0).toInt()
+        }
+        value[32] = 1
+        value
+    }
 
 data class PacketInfo(val protocol: Int, var locale: Locale)
+
+fun varIntBytes(value: Int): Int = VARINT_EXACT_BYTE_LENGTHS[value.countLeadingZeroBits()]
 
 fun ByteBuf.cache(packetInfo: PacketInfo): Closeable {
     packetCache[this] = packetInfo
@@ -27,8 +40,34 @@ var ByteBuf.locale: Locale
         packetCache.get(this)?.let { packetInfo -> packetInfo.locale = value }
     }
 
+fun ByteBuf.writeUuid(uuid: UUID): ByteBuf {
+    this.writeLong(uuid.mostSignificantBits)
+    this.writeLong(uuid.leastSignificantBits)
+    return this
+}
+
+fun <T> ByteBuf.writeCollection(collection: Array<T>, transform: (T) -> Unit): ByteBuf {
+    return this.writeCollection(collection.asList(), transform)
+}
+
+fun <T> ByteBuf.writeCollection(collection: Collection<T>, transform: (T) -> Unit): ByteBuf {
+    this.writeVarInt(collection.size)
+    collection.forEach { transform.invoke(it) }
+    return this
+}
+
+fun ByteBuf.writeEnum(enum: Enum<*>): ByteBuf {
+    this.writeVarInt(enum.ordinal)
+    return this
+}
+
+fun ByteBuf.writeInt3(pos: Int3): ByteBuf {
+    this.writeLong(pos.asLong())
+    return this
+}
+
 fun ByteBuf.writeComponent(component: Component): ByteBuf {
-    this.writeString(component.toJsonString(this.locale))
+    this.writeString(gson.toJson(component.toJsonObject(this.locale)))
     return this
 }
 
